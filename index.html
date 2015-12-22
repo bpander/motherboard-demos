@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Motherboard.js Todo List Demo</title>
+</head>
+<body>
+
+    <div data-dispatcher="TodosDispatcher">
+        <form data-component="FormComponent" novalidate>
+            <input type="text" name="text" placeholder="What needs to be done?" required autocomplete="off" />
+            <button>submit</button>
+        </form>
+        <ul data-tag="TodosDispatcher:todoList"></ul>
+    </div>
+
+    <script src="bower_components/requirejs/require.js"></script>
+    <script>
+        require.config({
+
+            baseUrl: 'scripts',
+
+            paths: {
+                jquery: '../bower_components/jquery/dist/jquery.min',
+                'jquery-deparam': '../bower_components/jquery-deparam/jquery-deparam',
+                motherboard: '../bower_components/motherboard/dist/motherboard'
+            },
+
+            shim: {
+                deps: {
+                    'jquery-deparam': ['jquery']
+                }
+            }
+
+        });
+
+        require(['main']);
+    </script>
+</body>
+</html>

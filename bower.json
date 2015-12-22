@@ -1,0 +1,23 @@
+{
+  "name": "motherboard-demos",
+  "version": "0.0.0",
+  "homepage": "https://github.com/bpander/motherboard-demos",
+  "authors": [
+    "Bradley Anderson <brad.anderson87@gmail.com>"
+  ],
+  "description": "Demos showing how to use motherboard.js.",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery-deparam": "~0.5.1",
+    "jquery": "~2.1.4",
+    "requirejs": "~2.1.22",
+    "motherboard": "~0.0.1"
+  }
+}

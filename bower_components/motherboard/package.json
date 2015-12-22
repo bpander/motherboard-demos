@@ -1,0 +1,25 @@
+{
+  "name": "motherboard",
+  "version": "0.0.1",
+  "description": "A JavaScript architecture boilerplate.",
+  "main": "dist/motherboard.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bpander/motherboard.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bpander/motherboard/issues"
+  },
+  "homepage": "https://github.com/bpander/motherboard",
+  "devDependencies": {
+    "amdclean": "2.7.0",
+    "grunt": "0.4.5",
+    "grunt-contrib-requirejs": "0.4.4",
+    "grunt-contrib-uglify": "0.11.0"
+  }
+}
