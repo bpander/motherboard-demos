@@ -1,17 +1,32 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="utf-8" />
     <title>Motherboard.js Todo List Demo</title>
+
+    <link rel="stylesheet" href="node_modules/todomvc-app-css/index.css" />
 </head>
 <body>
 
-    <div data-dispatcher="TodosDispatcher">
-        <form data-component="FormComponent" novalidate>
-            <input type="text" name="text" placeholder="What needs to be done?" required autocomplete="off" />
-            <button>submit</button>
-        </form>
-        <ul data-tag="TodosDispatcher:todoList"></ul>
-    </div>
+    <section class="todoapp" data-dispatcher="TodosDispatcher">
+        <header class="header">
+            <h1>todos</h1>
+            <form data-component="FormComponent" novalidate>
+                <input class="new-todo" type="text" name="text" placeholder="What needs to be done?" required autocomplete="off" autofocus />
+            </form>
+        </header>
+        <section class="main">
+            <input class="toggle-all" id="toggle-all" type="checkbox" />
+            <label for="toggle-all">Mark all as complete</label>
+            <ul class="todo-list" data-tag="TodosDispatcher:todoList"></ul>
+        </section>
+        <footer class="footer" style="display: none;"></footer>
+    </section>
+    <footer class="info">
+        <p>Double-click to edit a todo</p>
+        <p>Written by <a href="https://github.com/bpander/motherboard-demos">bpander</a></p>
+        <p>Part of <a href="http://todomvc.com">TodoMVC</a></p>
+    </footer>
 
     <script src="bower_components/requirejs/require.js"></script>
     <script>

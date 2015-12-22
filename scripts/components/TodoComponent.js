@@ -13,6 +13,11 @@ define(function (require) {
     var proto = TodoComponent.prototype;
 
 
+    TodoComponent.options = {
+        editingClass: 'editing'
+    };
+
+
     TodoComponent.EVENT = {
         STATUS_CHANGE: 'complete',
         TEXT_CHANGE: 'textchange',
@@ -29,8 +34,7 @@ define(function (require) {
     };
 
     var _handleLabelDblClick = function () {
-        this.label.style.display = 'none';
-        this.editField.style.display = '';
+        this.element.classList.add(this.options.editingClass);
         this.editField.value = this.label.textContent;
         this.editField.select();
     };
@@ -39,8 +43,7 @@ define(function (require) {
         if (e.type === 'keyup' && e.keyCode !== 13) {
             return;
         }
-        this.label.style.display = '';
-        this.editField.style.display = 'none';
+        this.element.classList.remove(this.options.editingClass);
         this.label.textContent = this.editField.value;
         this.emit(TodoComponent.EVENT.TEXT_CHANGE, { text: this.editField.value });
     };
@@ -51,10 +54,12 @@ define(function (require) {
         this.bindings = [];
 
         this.element.innerHTML = `
-            <input type="checkbox" ${ vm.complete ? 'checked' : '' } data-tag="TodoComponent:checkbox" />
-            <label data-tag="TodoComponent:label">${vm.text}</label>
-            <input type="text" data-tag="TodoComponent:editField" style="display: none;" />
-            <button data-tag="TodoComponent:removalButton">Remove</button>
+            <div class="view">
+                <input class="toggle" type="checkbox" ${ vm.complete ? 'checked' : '' } data-tag="TodoComponent:checkbox" />
+                <label data-tag="TodoComponent:label">${vm.text}</label>
+                <button class="destroy" data-tag="TodoComponent:removalButton"></button>
+            </div>
+            <input type="text" class="edit" data-tag="TodoComponent:editField" />
         `;
 
         this.editField = this.findWithTag('TodoComponent:editField');

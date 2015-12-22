@@ -1,0 +1,23 @@
+{
+  "name": "motherboard-demos",
+  "version": "1.0.0",
+  "description": "Demos showing how to use motherboard.js.",
+  "main": "",
+  "dependencies": {
+    "todomvc-app-css": "^2.0.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bpander/motherboard-demos.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bpander/motherboard-demos/issues"
+  },
+  "homepage": "https://github.com/bpander/motherboard-demos"
+}
