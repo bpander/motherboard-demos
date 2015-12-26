@@ -36,13 +36,14 @@ define(function (require) {
         var todoModel = this.todoRepository.create(e.data.requestObject);
         this.add(todoModel);
         this.formComponent.element.reset();
+        this.updateUI();
     };
 
 
     var _handleTodoStatusChange = function (e) {
         var guid = e.target.element.dataset[MODEL_ID_KEY];
         this.todoRepository.update(guid, { complete: e.data.complete });
-        this.updateCheckAllBox();
+        this.updateUI();
     };
 
 
@@ -63,6 +64,7 @@ define(function (require) {
         this.todoRepository.delete(id);
         Parser.unparse(e.target.element);
         element.parentNode.removeChild(element);
+        this.updateUI();
     };
 
 
@@ -83,7 +85,7 @@ define(function (require) {
         this.enable();
 
         this.todoRepository.fetch().forEach(todo => this.add(todo));
-        this.updateCheckAllBox();
+        this.updateUI();
     };
 
 
@@ -98,8 +100,12 @@ define(function (require) {
     };
 
 
-    proto.updateCheckAllBox = function () {
-        this.checkAllBox.checked = this.getComponents(TodoComponent).every(c => c.checkbox.checked);
+    proto.updateUI = function () {
+        var todoComponents = this.getComponents(TodoComponent);
+        var remainingCount = todoComponents.filter(c => !c.checkbox.checked).length;
+        var areAllComplete = remainingCount <= 0;
+        this.checkAllBox.checked = areAllComplete;
+        this.remainingCount.innerHTML = remainingCount;
     };
 
 
