@@ -15,6 +15,8 @@ define(function (require) {
 
         this.filters = this.findAllWithTag('TodosDispatcher:filter');
 
+        this.checkAllBox = this.findWithTag('TodosDispatcher:checkAllBox');
+
         this.remainingCount = this.findWithTag('TodosDispatcher:remainingCount');
 
         this.formComponent = null;
@@ -40,6 +42,7 @@ define(function (require) {
     var _handleTodoStatusChange = function (e) {
         var guid = e.target.element.dataset[MODEL_ID_KEY];
         this.todoRepository.update(guid, { complete: e.data.complete });
+        this.updateCheckAllBox();
     };
 
 
@@ -63,14 +66,24 @@ define(function (require) {
     };
 
 
+    var _handleCheckAllChange = function (e) {
+        var isComplete = e.target.checked;
+        this.getComponents(TodoComponent).forEach(function (todoComponent) {
+            todoComponent.setComplete(isComplete);
+        });
+    };
+
+
     proto.init = function () {
         this.formComponent = this.getComponent(FormComponent);
 
         this.createBinding(this.formComponent, FormComponent.EVENT.SUBMIT, _handleSubmit);
         this.createBinding(this.filters, 'change', _handleFilterChange);
+        this.createBinding(this.checkAllBox, 'change', _handleCheckAllChange);
         this.enable();
 
         this.todoRepository.fetch().forEach(todo => this.add(todo));
+        this.updateCheckAllBox();
     };
 
 
@@ -82,6 +95,11 @@ define(function (require) {
         this.createBinding(component, TodoComponent.EVENT.STATUS_CHANGE, _handleTodoStatusChange).enable();
         this.createBinding(component, TodoComponent.EVENT.TEXT_CHANGE, _handleTodoTextChange).enable();
         this.createBinding(component, TodoComponent.EVENT.REMOVE, _handleTodoRemove).enable();
+    };
+
+
+    proto.updateCheckAllBox = function () {
+        this.checkAllBox.checked = this.getComponents(TodoComponent).every(c => c.checkbox.checked);
     };
 
 

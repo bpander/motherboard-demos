@@ -7,6 +7,12 @@ define(function (require) {
     function TodoComponent (element, options) {
         Component.call(this, element, options);
 
+        this.checkbox = null;
+
+        this.editField = null;
+
+        this.label = null;
+
     }
     TodoComponent.prototype = Object.create(Component.prototype);
     TodoComponent.prototype.constructor = TodoComponent;
@@ -62,15 +68,26 @@ define(function (require) {
             <input type="text" class="edit" data-tag="TodoComponent:editField" />
         `;
 
+        this.checkbox = this.findWithTag('TodoComponent:checkbox');
         this.editField = this.findWithTag('TodoComponent:editField');
         this.label = this.findWithTag('TodoComponent:label');
 
-        this.createBinding(this.findWithTag('TodoComponent:checkbox'), 'change', _handleCheckboxChange);
+        this.createBinding(this.checkbox, 'change', _handleCheckboxChange);
         this.createBinding(this.label, 'dblclick', _handleLabelDblClick);
         this.createBinding(this.editField, 'keyup', _handleEditFieldBlur);
         this.createBinding(this.editField, 'blur', _handleEditFieldBlur)
         this.createBinding(this.findWithTag('TodoComponent:removalButton'), 'click', _handleRemovalButtonClick);
         this.enable();
+    };
+
+
+    TodoComponent.prototype.setComplete = function (isComplete) {
+        var previousValue = this.checkbox.checked;
+        if (isComplete === previousValue) {
+            return;
+        }
+        this.checkbox.checked = isComplete;
+        this.emit(TodoComponent.EVENT.STATUS_CHANGE, { complete: isComplete });
     };
 
 
