@@ -43,8 +43,7 @@ define(function (require) {
 
 
     var _handleTodoStatusChange = function (e) {
-        var guid = e.target.element.dataset[MODEL_ID_KEY];
-        this.todoRepository.update(guid, { complete: e.data.complete });
+        this.toggleComplete([ e.target ], e.data.complete);
         this.updateUI();
     };
 
@@ -67,10 +66,8 @@ define(function (require) {
 
 
     var _handleCheckAllChange = function (e) {
-        var isComplete = e.target.checked;
-        this.getComponents(TodoComponent).forEach(function (todoComponent) {
-            todoComponent.setComplete(isComplete);
-        });
+        this.toggleComplete(this.getComponents(TodoComponent), e.target.checked);
+        this.updateUI();
     };
 
 
@@ -113,6 +110,15 @@ define(function (require) {
             this.todoRepository.delete(id);
             Parser.unparse(todoComponent.element);
             element.parentNode.removeChild(element);
+        }, this);
+    };
+
+
+    proto.toggleComplete = function (todoComponents, isComplete) {
+        todoComponents.forEach(function (todoComponent) {
+            var guid = todoComponent.element.dataset[MODEL_ID_KEY];
+            this.todoRepository.update(guid, { complete: isComplete });
+            todoComponent.checkbox.checked = isComplete;
         }, this);
     };
 

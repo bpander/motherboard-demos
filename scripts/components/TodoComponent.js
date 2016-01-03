@@ -81,15 +81,5 @@ define(function (require) {
     };
 
 
-    TodoComponent.prototype.setComplete = function (isComplete) {
-        var previousValue = this.checkbox.checked;
-        if (isComplete === previousValue) {
-            return;
-        }
-        this.checkbox.checked = isComplete;
-        this.emit(TodoComponent.EVENT.STATUS_CHANGE, { complete: isComplete });
-    };
-
-
     return TodoComponent;
 });
