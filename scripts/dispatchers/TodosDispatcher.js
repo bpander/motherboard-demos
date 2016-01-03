@@ -19,6 +19,8 @@ define(function (require) {
 
         this.remainingCount = this.findWithTag('TodosDispatcher:remainingCount');
 
+        this.clearCompletedButton = this.findWithTag('TodosDispatcher:clearCompletedButton');
+
         this.formComponent = null;
 
         this.todoRepository = new TodoRepository();
@@ -59,11 +61,7 @@ define(function (require) {
 
 
     var _handleTodoRemove = function (e) {
-        var id = e.target.element.dataset[MODEL_ID_KEY];
-        var element = e.target.element;
-        this.todoRepository.delete(id);
-        Parser.unparse(e.target.element);
-        element.parentNode.removeChild(element);
+        this.remove([ e.target ]);
         this.updateUI();
     };
 
@@ -76,12 +74,20 @@ define(function (require) {
     };
 
 
+    var _handleClearCompletedClick = function () {
+        var completed = this.getComponents(TodoComponent).filter(todoComponent => todoComponent.checkbox.checked);
+        this.remove(completed);
+        this.updateUI();
+    };
+
+
     proto.init = function () {
         this.formComponent = this.getComponent(FormComponent);
 
         this.createBinding(this.formComponent, FormComponent.EVENT.SUBMIT, _handleSubmit);
         this.createBinding(this.filters, 'change', _handleFilterChange);
         this.createBinding(this.checkAllBox, 'change', _handleCheckAllChange);
+        this.createBinding(this.clearCompletedButton, 'click', _handleClearCompletedClick);
         this.enable();
 
         this.todoRepository.fetch().forEach(todo => this.add(todo));
@@ -100,12 +106,28 @@ define(function (require) {
     };
 
 
+    proto.remove = function (todoComponents) {
+        todoComponents.forEach(function (todoComponent) {
+            var element = todoComponent.element;
+            var id = element.dataset[MODEL_ID_KEY];
+            this.todoRepository.delete(id);
+            Parser.unparse(todoComponent.element);
+            element.parentNode.removeChild(element);
+        }, this);
+    };
+
+
     proto.updateUI = function () {
         var todoComponents = this.getComponents(TodoComponent);
-        var remainingCount = todoComponents.filter(c => !c.checkbox.checked).length;
+        var completedCount = todoComponents.filter(c => c.checkbox.checked).length;
+        var remainingCount = todoComponents.length - completedCount;
         var areAllComplete = remainingCount <= 0;
+
+        this.checkAllBox.style.display = (todoComponents.length > 0) ? '' : 'none';
         this.checkAllBox.checked = areAllComplete;
+
         this.remainingCount.innerHTML = remainingCount;
+        this.clearCompletedButton.disabled = completedCount <= 0;
     };
 
 

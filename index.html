@@ -5,6 +5,19 @@
     <title>Motherboard.js Todo List Demo</title>
 
     <link rel="stylesheet" href="node_modules/todomvc-app-css/index.css" />
+    <style type="text/css">
+        .clear-completed:disabled {
+            opacity: 0.4;
+        }
+        .clear-completed:disabled:hover {
+            text-decoration: none;
+        }
+
+        .toggle:checked + label {
+            text-decoration: line-through;
+            color: #d9d9d9;
+        }
+    </style>
 </head>
 <body>
 
@@ -33,7 +46,7 @@
                     <a href="#/completed">Completed</a>
                 </li>
             </ul>
-            <button class="clear-completed">Clear completed</button>
+            <button class="clear-completed" data-tag="TodosDispatcher:clearCompletedButton">Clear completed</button>
         </footer>
     </section>
     <footer class="info">
