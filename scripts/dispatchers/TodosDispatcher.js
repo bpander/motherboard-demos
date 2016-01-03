@@ -21,6 +21,8 @@ define(function (require) {
 
         this.clearCompletedButton = this.findWithTag('TodosDispatcher:clearCompletedButton');
 
+        this.footer = this.findWithTag('TodosDispatcher:footer');
+
         this.formComponent = null;
 
         this.todoRepository = new TodoRepository();
@@ -125,11 +127,17 @@ define(function (require) {
 
     proto.updateUI = function () {
         var todoComponents = this.getComponents(TodoComponent);
+        if (todoComponents.length <= 0) {
+            this.footer.style.display = 'none';
+            this.checkAllBox.style.display = 'none';
+            return;
+        }
         var completedCount = todoComponents.filter(c => c.checkbox.checked).length;
         var remainingCount = todoComponents.length - completedCount;
         var areAllComplete = remainingCount <= 0;
 
-        this.checkAllBox.style.display = (todoComponents.length > 0) ? '' : 'none';
+        this.footer.style.display = '';
+        this.checkAllBox.style.display = '';
         this.checkAllBox.checked = areAllComplete;
 
         this.remainingCount.innerHTML = remainingCount;
