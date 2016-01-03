@@ -13,8 +13,6 @@ define(function (require) {
 
         this.todoList = this.findWithTag('TodosDispatcher:todoList');
 
-        this.filters = this.findAllWithTag('TodosDispatcher:filter');
-
         this.checkAllBox = this.findWithTag('TodosDispatcher:checkAllBox');
 
         this.remainingCount = this.findWithTag('TodosDispatcher:remainingCount');
@@ -56,11 +54,6 @@ define(function (require) {
     };
 
 
-    var _handleFilterChange = function (e) {
-
-    };
-
-
     var _handleTodoRemove = function (e) {
         this.remove([ e.target ]);
         this.updateUI();
@@ -74,7 +67,7 @@ define(function (require) {
 
 
     var _handleClearCompletedClick = function () {
-        var completed = this.getComponents(TodoComponent).filter(todoComponent => todoComponent.checkbox.checked);
+        var completed = this.getComponents(TodoComponent).filter(c => c.checkbox.checked);
         this.remove(completed);
         this.updateUI();
     };
@@ -84,7 +77,6 @@ define(function (require) {
         this.formComponent = this.getComponent(FormComponent);
 
         this.createBinding(this.formComponent, FormComponent.EVENT.SUBMIT, _handleSubmit);
-        this.createBinding(this.filters, 'change', _handleFilterChange);
         this.createBinding(this.checkAllBox, 'change', _handleCheckAllChange);
         this.createBinding(this.clearCompletedButton, 'click', _handleClearCompletedClick);
         this.enable();
