@@ -13,11 +13,13 @@ define(function (require) {
 
         this.todoList = this.findWithTag('TodosDispatcher:todoList');
 
-        this.filters = this.findAllWithTag('TodosDispatcher:filter');
-
         this.checkAllBox = this.findWithTag('TodosDispatcher:checkAllBox');
 
         this.remainingCount = this.findWithTag('TodosDispatcher:remainingCount');
+
+        this.clearCompletedButton = this.findWithTag('TodosDispatcher:clearCompletedButton');
+
+        this.footer = this.findWithTag('TodosDispatcher:footer');
 
         this.formComponent = null;
 
@@ -41,8 +43,7 @@ define(function (require) {
 
 
     var _handleTodoStatusChange = function (e) {
-        var guid = e.target.element.dataset[MODEL_ID_KEY];
-        this.todoRepository.update(guid, { complete: e.data.complete });
+        this.toggleComplete([ e.target ], e.data.complete);
         this.updateUI();
     };
 
@@ -53,26 +54,22 @@ define(function (require) {
     };
 
 
-    var _handleFilterChange = function (e) {
-
-    };
-
-
     var _handleTodoRemove = function (e) {
-        var id = e.target.element.dataset[MODEL_ID_KEY];
-        var element = e.target.element;
-        this.todoRepository.delete(id);
-        Parser.unparse(e.target.element);
-        element.parentNode.removeChild(element);
+        this.remove([ e.target ]);
         this.updateUI();
     };
 
 
     var _handleCheckAllChange = function (e) {
-        var isComplete = e.target.checked;
-        this.getComponents(TodoComponent).forEach(function (todoComponent) {
-            todoComponent.setComplete(isComplete);
-        });
+        this.toggleComplete(this.getComponents(TodoComponent), e.target.checked);
+        this.updateUI();
+    };
+
+
+    var _handleClearCompletedClick = function () {
+        var completed = this.getComponents(TodoComponent).filter(c => c.checkbox.checked);
+        this.remove(completed);
+        this.updateUI();
     };
 
 
@@ -80,8 +77,8 @@ define(function (require) {
         this.formComponent = this.getComponent(FormComponent);
 
         this.createBinding(this.formComponent, FormComponent.EVENT.SUBMIT, _handleSubmit);
-        this.createBinding(this.filters, 'change', _handleFilterChange);
         this.createBinding(this.checkAllBox, 'change', _handleCheckAllChange);
+        this.createBinding(this.clearCompletedButton, 'click', _handleClearCompletedClick);
         this.enable();
 
         this.todoRepository.fetch().forEach(todo => this.add(todo));
@@ -100,12 +97,43 @@ define(function (require) {
     };
 
 
+    proto.remove = function (todoComponents) {
+        todoComponents.forEach(function (todoComponent) {
+            var element = todoComponent.element;
+            var id = element.dataset[MODEL_ID_KEY];
+            this.todoRepository.delete(id);
+            Parser.unparse(todoComponent.element);
+            element.parentNode.removeChild(element);
+        }, this);
+    };
+
+
+    proto.toggleComplete = function (todoComponents, isComplete) {
+        todoComponents.forEach(function (todoComponent) {
+            var guid = todoComponent.element.dataset[MODEL_ID_KEY];
+            this.todoRepository.update(guid, { complete: isComplete });
+            todoComponent.checkbox.checked = isComplete;
+        }, this);
+    };
+
+
     proto.updateUI = function () {
         var todoComponents = this.getComponents(TodoComponent);
-        var remainingCount = todoComponents.filter(c => !c.checkbox.checked).length;
+        if (todoComponents.length <= 0) {
+            this.footer.style.display = 'none';
+            this.checkAllBox.style.display = 'none';
+            return;
+        }
+        var completedCount = todoComponents.filter(c => c.checkbox.checked).length;
+        var remainingCount = todoComponents.length - completedCount;
         var areAllComplete = remainingCount <= 0;
+
+        this.footer.style.display = '';
+        this.checkAllBox.style.display = '';
         this.checkAllBox.checked = areAllComplete;
+
         this.remainingCount.innerHTML = remainingCount;
+        this.clearCompletedButton.disabled = completedCount <= 0;
     };
 
 
