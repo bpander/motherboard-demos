@@ -64,12 +64,16 @@
             paths: {
                 jquery: '../bower_components/jquery/dist/jquery.min',
                 'jquery-deparam': '../bower_components/jquery-deparam/jquery-deparam',
-                motherboard: '../bower_components/motherboard/dist/motherboard'
+                motherboard: '../bower_components/motherboard/dist/motherboard',
+                Router: '../bower_components/director/build/director'
             },
 
             shim: {
-                deps: {
-                    'jquery-deparam': ['jquery']
+                'jquery-deparam': {
+                    deps: ['jquery']
+                },
+                Router: {
+                    exports: 'Router'
                 }
             }
 

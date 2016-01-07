@@ -14,7 +14,7 @@ define(function (require) {
             return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
         }
         return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
-    }
+    };
 
 
     var _todoInterface = {
@@ -26,8 +26,19 @@ define(function (require) {
     };
 
 
-    TodoRepository.prototype.fetch = function () {
-        return JSON.parse(localStorage.getItem('TodoRepository') || '[]');
+    TodoRepository.prototype.fetch = function (filters) {
+        var prop;
+        var models = JSON.parse(localStorage.getItem('TodoRepository')) || [];
+        return models.filter(function (model) {
+            for (prop in filters) {
+                if (filters.hasOwnProperty(prop)) {
+                    if (model.data[prop] !== filters[prop]) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        });
     };
 
 
@@ -38,7 +49,7 @@ define(function (require) {
 
     TodoRepository.prototype.create = function (data) {
         var models = this.fetch();
-        var model = $.extend({}, _todoInterface, {
+        var model = $.extend(true, {}, _todoInterface, {
             guid: _generateGUID(),
             data: data
         });
@@ -73,6 +84,21 @@ define(function (require) {
             }
         }
         this.push(models);
+    };
+
+
+    TodoRepository.prototype.clearCompleted = function () {
+        var removedModels = [];
+        var models = this.fetch();
+        var i = models.length;
+        var model;
+        while ((model = models[--i]) !== undefined) {
+            if (model.data.complete === true) {
+                removedModels.push(models.splice(i, 1)[0]);
+            }
+        }
+        this.push(models);
+        return removedModels;
     };
 
 

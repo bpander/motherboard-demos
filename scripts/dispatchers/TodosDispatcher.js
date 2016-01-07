@@ -23,6 +23,10 @@ define(function (require) {
 
         this.formComponent = null;
 
+        this.filters = {};
+
+        this.models = [];
+
         this.todoRepository = new TodoRepository();
 
     }
@@ -35,8 +39,8 @@ define(function (require) {
 
 
     var _handleSubmit = function (e) {
-        var todoModel = this.todoRepository.create(e.data.requestObject);
-        this.add(todoModel);
+        var model = this.todoRepository.create(e.data.requestObject);
+        this.add([ model ]);
         this.formComponent.element.reset();
         this.updateUI();
     };
@@ -55,6 +59,8 @@ define(function (require) {
 
 
     var _handleTodoRemove = function (e) {
+        var guid = e.target.element.dataset[MODEL_ID_KEY];
+        this.todoRepository.delete(guid);
         this.remove([ e.target ]);
         this.updateUI();
     };
@@ -67,8 +73,8 @@ define(function (require) {
 
 
     var _handleClearCompletedClick = function () {
-        var completed = this.getComponents(TodoComponent).filter(c => c.checkbox.checked);
-        this.remove(completed);
+        var models = this.todoRepository.clearCompleted();
+        this.updateList();
         this.updateUI();
     };
 
@@ -80,20 +86,26 @@ define(function (require) {
         this.createBinding(this.checkAllBox, 'change', _handleCheckAllChange);
         this.createBinding(this.clearCompletedButton, 'click', _handleClearCompletedClick);
         this.enable();
-
-        this.todoRepository.fetch().forEach(todo => this.add(todo));
-        this.updateUI();
     };
 
 
-    proto.add = function (todoModel) {
-        var element = this.todoList.appendChild(document.createElement('li'));
-        var component = Parser.create(TodoComponent, element, { option: true });
-        component.render(todoModel.data);
-        element.dataset[MODEL_ID_KEY] = todoModel.guid;
-        this.createBinding(component, TodoComponent.EVENT.STATUS_CHANGE, _handleTodoStatusChange).enable();
-        this.createBinding(component, TodoComponent.EVENT.TEXT_CHANGE, _handleTodoTextChange).enable();
-        this.createBinding(component, TodoComponent.EVENT.REMOVE, _handleTodoRemove).enable();
+    proto.updateList = function () {
+        this.models = this.todoRepository.fetch(this.filters);
+        this.remove(this.getComponents(TodoComponent));
+        this.add(this.models);
+    };
+
+
+    proto.add = function (models) {
+        models.forEach(function (model) {
+            var element = this.todoList.appendChild(document.createElement('li'));
+            var component = Parser.create(TodoComponent, element, { option: true });
+            component.render(model.data);
+            element.dataset[MODEL_ID_KEY] = model.guid;
+            this.createBinding(component, TodoComponent.EVENT.STATUS_CHANGE, _handleTodoStatusChange).enable();
+            this.createBinding(component, TodoComponent.EVENT.TEXT_CHANGE, _handleTodoTextChange).enable();
+            this.createBinding(component, TodoComponent.EVENT.REMOVE, _handleTodoRemove).enable();
+        }, this);
     };
 
 
@@ -101,7 +113,6 @@ define(function (require) {
         todoComponents.forEach(function (todoComponent) {
             var element = todoComponent.element;
             var id = element.dataset[MODEL_ID_KEY];
-            this.todoRepository.delete(id);
             Parser.unparse(todoComponent.element);
             element.parentNode.removeChild(element);
         }, this);
@@ -118,14 +129,15 @@ define(function (require) {
 
 
     proto.updateUI = function () {
-        var todoComponents = this.getComponents(TodoComponent);
-        if (todoComponents.length <= 0) {
+        var models = this.models;
+        if (models.length <= 0) {
             this.footer.style.display = 'none';
             this.checkAllBox.style.display = 'none';
             return;
         }
-        var completedCount = todoComponents.filter(c => c.checkbox.checked).length;
-        var remainingCount = todoComponents.length - completedCount;
+        console.log(models);
+        var completedCount = models.filter(model => model.data.complete).length;
+        var remainingCount = models.length - completedCount;
         var areAllComplete = remainingCount <= 0;
 
         this.footer.style.display = '';
@@ -134,6 +146,12 @@ define(function (require) {
 
         this.remainingCount.innerHTML = remainingCount;
         this.clearCompletedButton.disabled = completedCount <= 0;
+    };
+
+
+    proto.filter = function (filters) {
+        this.filters = filters;
+        this.updateList();
     };
 
 

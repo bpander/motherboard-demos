@@ -18,6 +18,7 @@
     "jquery-deparam": "~0.5.1",
     "jquery": "~2.1.4",
     "requirejs": "~2.1.22",
-    "motherboard": "~0.0.1"
+    "motherboard": "~0.0.1",
+    "director": "~1.2.8"
   }
 }
